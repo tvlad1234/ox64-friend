@@ -55,7 +55,7 @@ void cdc_task(void)
         rx_buf[rx_len++] = uart_getc(PICOPROBE_UART_INTERFACE);
     }
 
-    if (tud_cdc_connected()) {
+    if (tud_ready()) {
         was_connected = 1;
         int written = 0;
         /* Implicit overflow if we don't write all the bytes to the host.
@@ -119,8 +119,8 @@ void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts)
 {
   /* CDC drivers use linestate as a bodge to activate/deactivate the interface.
    * Resume our UART polling on activate, stop on deactivate */
-  if (!dtr && !rts)
-    vTaskSuspend(uart_taskhandle);
-  else
-    vTaskResume(uart_taskhandle);
+  // if (!dtr && !rts)
+  //   vTaskSuspend(uart_taskhandle);
+  // else
+  //   vTaskResume(uart_taskhandle);
 }
