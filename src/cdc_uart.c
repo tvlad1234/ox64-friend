@@ -117,9 +117,11 @@ void tud_cdc_line_coding_cb(uint8_t itf, cdc_line_coding_t const* line_coding) {
     uint32_t micros = (1000 * 1000 * 16 * 10) / MAX(line_coding->bit_rate, 1);
 
     uart_deinit(PICOPROBE_UART_INTERFACE);
+    uart_deinit(PICOPROBE_UART2_INTERFACE);
     tud_cdc_write_clear();
     tud_cdc_read_flush();
     uart_init(PICOPROBE_UART_INTERFACE, line_coding->bit_rate);
+    uart_init(PICOPROBE_UART2_INTERFACE, line_coding->bit_rate);
 }
 
 void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts) {
