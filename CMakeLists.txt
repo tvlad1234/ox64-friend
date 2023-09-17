@@ -11,6 +11,11 @@ add_executable(picoprobe
         src/usb_descriptors.c
         src/cdc_uart.c
         src/get_serial.c
+        CMSIS_5/CMSIS/DAP/Firmware/Source/DAP.c
+        CMSIS_5/CMSIS/DAP/Firmware/Source/JTAG_DP.c
+        CMSIS_5/CMSIS/DAP/Firmware/Source/DAP_vendor.c
+        CMSIS_5/CMSIS/DAP/Firmware/Source/SWO.c
+        CMSIS_5/CMSIS/DAP/Firmware/Source/SW_DP.c
 )
 
 target_compile_options(picoprobe PRIVATE -Wall)
@@ -22,14 +27,19 @@ endif()
 
 set(DBG_PIN_COUNT=4)
 
-target_include_directories(picoprobe PRIVATE src)
+target_include_directories(picoprobe PRIVATE
+        CMSIS_5/CMSIS/DAP/Firmware/Include/
+        CMSIS_5/CMSIS/Core/Include/
+        src/
+        include/
+)
+
 
 target_compile_definitions (picoprobe PRIVATE
 	PICO_RP2040_USB_DEVICE_ENUMERATION_FIX=1
 )
 
 target_link_libraries(picoprobe PRIVATE
-        pico_multicore
         pico_stdlib
         pico_unique_id
         tinyusb_device

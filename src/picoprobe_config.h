@@ -26,6 +26,12 @@
 #ifndef PICOPROBE_H_
 #define PICOPROBE_H_
 
+// SWD/JTAG config
+#define PROBE_PIN_TCK_SWCLK 2
+#define PROBE_PIN_TMS_SWDIO 3
+#define PROBE_PIN_TDO       6
+#define PROBE_PIN_TDI       7
+
 // UART config
 #define PICOPROBE_UART_TX 4
 #define PICOPROBE_UART_RX 5

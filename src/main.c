@@ -34,18 +34,56 @@
 #include "picoprobe_config.h"
 #include "tusb.h"
 
-int main(void) {
-    uint32_t resp_len;
+#include "DAP_config.h"
+#include "DAP.h"
 
+int main(void)
+{
     board_init();
     usb_serial_init();
     cdc_uart_init();
     tusb_init();
 
-    while (true) {
+    DAP_Setup();
+
+    while (true)
+    {
         tud_task();
         cdc_task();
     }
 
     return 0;
+}
+
+//--------------------------------------------------------------------+
+// USB HID
+//--------------------------------------------------------------------+
+
+// Invoked when received GET_REPORT control request
+// Application must fill buffer report's content and return its length.
+// Return zero will cause the stack to STALL request
+uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer, uint16_t reqlen)
+{
+    // TODO not Implemented
+    (void)itf;
+    (void)report_id;
+    (void)report_type;
+    (void)buffer;
+    (void)reqlen;
+
+    return 0;
+}
+
+void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const *RxDataBuffer, uint16_t bufsize)
+{
+    static uint8_t TxDataBuffer[CFG_TUD_HID_EP_BUFSIZE];
+
+    // This doesn't use multiple report and report ID
+    (void)itf;
+    (void)report_id;
+    (void)report_type;
+
+    DAP_ProcessCommand(RxDataBuffer, TxDataBuffer);
+
+    tud_hid_report(0, TxDataBuffer, sizeof(TxDataBuffer));
 }

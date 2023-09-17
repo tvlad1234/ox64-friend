@@ -60,11 +60,30 @@ uint8_t const * tud_descriptor_device_cb(void)
 }
 
 //--------------------------------------------------------------------+
+// HID Report Descriptor
+//--------------------------------------------------------------------+
+
+static uint8_t const desc_hid_report[] =
+{
+  TUD_HID_REPORT_DESC_GENERIC_INOUT(CFG_TUD_HID_EP_BUFSIZE)
+};
+
+// Invoked when received GET HID REPORT DESCRIPTOR
+// Application return pointer to descriptor
+// Descriptor contents must exist long enough for transfer to complete
+uint8_t const * tud_hid_descriptor_report_cb(uint8_t itf)
+{
+  (void) itf;
+  return desc_hid_report;
+}
+
+//--------------------------------------------------------------------+
 // Configuration Descriptor
 //--------------------------------------------------------------------+
 
 enum
 {
+  ITF_NUM_HID,
   ITF_NUM_CDC_COM,
   ITF_NUM_CDC_DATA,
   ITF_NUM_CDC2_COM,
@@ -78,15 +97,15 @@ enum
 #define CDC2_NOTIFICATION_EP_NUM 0x83
 #define CDC2_DATA_OUT_EP_NUM 0x04
 #define CDC2_DATA_IN_EP_NUM 0x84
+#define HID_EP_NUM 0x05
 
-#define CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_CDC_DESC_LEN)
-
+#define CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_CDC_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
 
 uint8_t const desc_configuration[] =
 {
   TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
   TUD_CDC_DESCRIPTOR(ITF_NUM_CDC_COM, 6, CDC_NOTIFICATION_EP_NUM, 64, CDC_DATA_OUT_EP_NUM, CDC_DATA_IN_EP_NUM, 64),
-  // Interface 1 + 2
+  TUD_HID_INOUT_DESCRIPTOR(ITF_NUM_HID, 0, HID_ITF_PROTOCOL_NONE, sizeof(desc_hid_report), HID_EP_NUM, 0x80 | HID_EP_NUM, CFG_TUD_HID_EP_BUFSIZE, 1),
   TUD_CDC_DESCRIPTOR(ITF_NUM_CDC2_COM, 6, CDC2_NOTIFICATION_EP_NUM, 64, CDC2_DATA_OUT_EP_NUM, CDC2_DATA_IN_EP_NUM, 64),
 };
 
@@ -111,7 +130,6 @@ char const* string_desc_arr [] =
   "Picoprobe CMSIS-DAP", // 2: Product
   usb_serial,     // 3: Serial, uses flash unique ID
   "Picoprobe CMSIS-DAP v1", // 4: Interface descriptor for HID transport
-  "Picoprobe CMSIS-DAP v2", // 5: Interface descriptor for Bulk transport
   "Picoprobe CDC-ACM UART", // 6: Interface descriptor for CDC
 };
 
